@@ -10,13 +10,14 @@ class VocabularyApp {
         this.masteredWords = new Set(JSON.parse(localStorage.getItem('masteredWords') || '[]'));
         this.showOnlyUnmastered = false;
         this.filteredWords = this.words;
-        this.speedLevel = 1; // 0=slow, 1=normal, 2=fast
+        this.customRate = parseFloat(localStorage.getItem('speechRate') || '1.0');
 
         this._initElements();
         this._bindEvents();
         this._updateDisplay();
         this._updateProgress();
         this._checkSpeechSupport();
+        this._updateSpeedDisplay();
     }
 
     _initElements() {
@@ -37,7 +38,9 @@ class VocabularyApp {
         this.masterBtn = document.getElementById('masterBtn');
         this.flipBtn = document.getElementById('flipBtn');
         this.filterBtn = document.getElementById('filterBtn');
-        this.speedBtn = document.getElementById('speedBtn');
+        this.speedDownBtn = document.getElementById('speedDown');
+        this.speedUpBtn = document.getElementById('speedUp');
+        this.speedDisplay = document.getElementById('speedDisplay');
 
         // 表示要素
         this.progressBar = document.getElementById('progressBar');
@@ -83,7 +86,8 @@ class VocabularyApp {
         this.filterBtn.addEventListener('click', () => this._toggleFilter());
 
         // 速度変更
-        this.speedBtn.addEventListener('click', () => this._cycleSpeed());
+        this.speedDownBtn.addEventListener('click', () => this._changeSpeed(-0.2));
+        this.speedUpBtn.addEventListener('click', () => this._changeSpeed(0.2));
 
         // iOSお知らせ閉じる
         if (this.iosNoticeClose) {
@@ -188,19 +192,21 @@ class VocabularyApp {
     }
 
     _getRate() {
-        const baseRate = this.speech.defaultRate;
-        switch (this.speedLevel) {
-            case 0: return baseRate * 0.7;  // スロー
-            case 1: return baseRate;         // ノーマル
-            case 2: return baseRate * 1.3;   // 速い
-            default: return baseRate;
-        }
+        return this.customRate;
     }
 
-    _cycleSpeed() {
-        this.speedLevel = (this.speedLevel + 1) % 3;
-        const labels = ['🐢 ゆっくり', '🎯 ふつう', '🐇 はやい'];
-        this.speedBtn.innerHTML = labels[this.speedLevel];
+    _changeSpeed(delta) {
+        this.customRate = Math.round((this.customRate + delta) * 10) / 10;
+        // 範囲制限: 0.2 〜 2.0
+        this.customRate = Math.max(0.2, Math.min(2.0, this.customRate));
+        localStorage.setItem('speechRate', this.customRate.toString());
+        this._updateSpeedDisplay();
+    }
+
+    _updateSpeedDisplay() {
+        this.speedDisplay.textContent = `×${this.customRate.toFixed(1)}`;
+        this.speedDownBtn.disabled = this.customRate <= 0.2;
+        this.speedUpBtn.disabled = this.customRate >= 2.0;
     }
 
     _prev() {

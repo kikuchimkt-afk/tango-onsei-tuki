@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
@@ -12,11 +13,14 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <div class="app-wrapper">
 
@@ -79,11 +83,11 @@
             <div class="example-display" id="example"></div>
             <div class="example-translation-display" id="exampleTranslation"></div>
             <div class="back-speak-btn-group">
-              <button class="speak-btn" onclick="app.speech.prime(); document.getElementById('speakWord').click();" aria-label="単語を発音">
+              <button class="speak-btn" id="speakWordBack" aria-label="単語を発音">
                 <span class="speak-icon">🔊</span>
                 <span>単語</span>
               </button>
-              <button class="speak-btn" onclick="app.speech.prime(); document.getElementById('speakExample').click();" aria-label="例文を発音">
+              <button class="speak-btn" id="speakExampleBack" aria-label="例文を発音">
                 <span class="speak-icon">📖</span>
                 <span>例文</span>
               </button>
@@ -109,7 +113,11 @@
       </div>
 
       <div class="controls-row">
-        <button class="ctrl-btn" id="speedBtn">🎯 ふつう</button>
+        <div class="speed-control">
+          <button class="ctrl-btn speed-btn" id="speedDown" aria-label="速度を下げる">−</button>
+          <span class="speed-display" id="speedDisplay">×1.0</span>
+          <button class="ctrl-btn speed-btn" id="speedUp" aria-label="速度を上げる">＋</button>
+        </div>
         <button class="ctrl-btn" id="filterBtn">
           <span class="btn-icon">📋</span> 未暗記のみ
         </button>
@@ -146,4 +154,5 @@
   <script src="js/speech.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
