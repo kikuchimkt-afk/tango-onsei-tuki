@@ -59,39 +59,42 @@ class VocabularyApp {
     }
 
     _bindEvents() {
+        // ヘルパー: nullセーフなイベント登録
+        const on = (el, event, fn) => { if (el) el.addEventListener(event, fn); };
+
         // カードフリップ（speak-btnクリック時はフリップしない）
-        this.cardInner.addEventListener('click', (e) => {
+        on(this.cardInner, 'click', (e) => {
             if (e.target.closest('.speak-btn')) return;
             this._flipCard();
         });
-        this.flipBtn.addEventListener('click', () => this._flipCard());
+        on(this.flipBtn, 'click', () => this._flipCard());
 
         // 音声ボタン（プライミングも兼ねる）
-        this.speakWordBtn.addEventListener('click', (e) => {
+        on(this.speakWordBtn, 'click', (e) => {
             e.stopPropagation();
             this.speech.prime();
             this._speakWord();
         });
 
-        this.speakExampleBtn.addEventListener('click', (e) => {
+        on(this.speakExampleBtn, 'click', (e) => {
             e.stopPropagation();
             this.speech.prime();
             this._speakExample();
         });
 
         // ナビゲーション
-        this.prevBtn.addEventListener('click', () => this._prev());
-        this.nextBtn.addEventListener('click', () => this._next());
+        on(this.prevBtn, 'click', () => this._prev());
+        on(this.nextBtn, 'click', () => this._next());
 
         // 暗記済みトグル
-        this.masterBtn.addEventListener('click', () => this._toggleMastered());
+        on(this.masterBtn, 'click', () => this._toggleMastered());
 
         // フィルター
-        this.filterBtn.addEventListener('click', () => this._toggleFilter());
+        on(this.filterBtn, 'click', () => this._toggleFilter());
 
         // 速度変更
-        this.speedDownBtn.addEventListener('click', () => this._changeSpeed(-0.2));
-        this.speedUpBtn.addEventListener('click', () => this._changeSpeed(0.2));
+        on(this.speedDownBtn, 'click', () => this._changeSpeed(-0.2));
+        on(this.speedUpBtn, 'click', () => this._changeSpeed(0.2));
 
         // iOSお知らせ閉じる
         if (this.iosNoticeClose) {
