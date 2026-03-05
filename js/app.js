@@ -3,6 +3,7 @@
  */
 class VocabularyApp {
     constructor() {
+        this.settings = new SettingsManager();
         this.speech = new SpeechEngine();
         this.words = [...VOCABULARY_DATA];
         this.currentIndex = 0;
@@ -29,6 +30,8 @@ class VocabularyApp {
         this._updateProgress();
         this._checkSpeechSupport();
         this._updateSpeedDisplay();
+        this.settings.applyAll();
+        this._applyUsername();
     }
 
     _initElements() {
@@ -65,6 +68,17 @@ class VocabularyApp {
         this.voiceModalClose = document.getElementById('voiceModalClose');
         this.voiceSettingsBtn = document.getElementById('voiceSettingsBtn');
         this.voiceListEl = document.getElementById('voiceList');
+
+        // 設定モーダル
+        this.settingsBtn = document.getElementById('settingsBtn');
+        this.settingsModal = document.getElementById('settingsModal');
+        this.settingsModalClose = document.getElementById('settingsModalClose');
+        this.usernameInput = document.getElementById('usernameInput');
+        this.themeGrid = document.getElementById('themeGrid');
+        this.fontList = document.getElementById('fontList');
+        this.resetProgressBtn = document.getElementById('resetProgressBtn');
+        this.resetAllBtn = document.getElementById('resetAllBtn');
+        this.headerSubtitle = document.getElementById('headerSubtitle');
     }
 
     _bindEvents() {
@@ -124,6 +138,29 @@ class VocabularyApp {
                 if (e.target === this.voiceModal) this._closeVoiceModal();
             });
         }
+
+        // 設定モーダル
+        on(this.settingsBtn, 'click', () => this._openSettings());
+        on(this.settingsModalClose, 'click', () => this._closeSettings());
+        if (this.settingsModal) {
+            this.settingsModal.addEventListener('click', (e) => {
+                if (e.target === this.settingsModal) this._closeSettings();
+            });
+        }
+        on(this.resetProgressBtn, 'click', () => {
+            if (confirm('暗記記録をリセットしますか？')) {
+                this.settings.resetProgress();
+                this.masteredWords.clear();
+                this._updateProgress();
+                this._updateDisplay();
+            }
+        });
+        on(this.resetAllBtn, 'click', () => {
+            if (confirm('全ての設定と記録を初期化しますか？\nページがリロードされます。')) {
+                this.settings.resetAll();
+                location.reload();
+            }
+        });
 
         // キーボードショートカット
         document.addEventListener('keydown', (e) => {
@@ -220,6 +257,65 @@ class VocabularyApp {
         if (this.speedBtn) {
             this.speedBtn.textContent = this.speedLevels[this.speedIndex].label;
         }
+    }
+
+    // ===== 設定モーダル =====
+    _openSettings() {
+        if (!this.settingsModal) return;
+        this._renderThemeGrid();
+        this._renderFontList();
+        if (this.usernameInput) {
+            this.usernameInput.value = this.settings.get('username') || '';
+            this.usernameInput.addEventListener('input', () => {
+                this.settings.set('username', this.usernameInput.value.trim());
+                this._applyUsername();
+            });
+        }
+        this.settingsModal.classList.add('show');
+    }
+
+    _closeSettings() {
+        if (this.settingsModal) this.settingsModal.classList.remove('show');
+    }
+
+    _applyUsername() {
+        const name = this.settings.get('username');
+        if (this.headerSubtitle) {
+            this.headerSubtitle.textContent = name ? `${name} さんの学習` : 'Eiken Pre-1 Vocabulary Trainer';
+        }
+    }
+
+    _renderThemeGrid() {
+        if (!this.themeGrid) return;
+        const currentTheme = this.settings.get('theme');
+        this.themeGrid.innerHTML = '';
+        Object.entries(this.settings.themes).forEach(([id, theme]) => {
+            const btn = document.createElement('button');
+            btn.className = `theme-item${id === currentTheme ? ' selected' : ''}`;
+            btn.innerHTML = `<span class="theme-swatch" style="background:${theme.primary}"></span>${theme.label}`;
+            btn.addEventListener('click', () => {
+                this.settings.applyTheme(id);
+                this._renderThemeGrid();
+            });
+            this.themeGrid.appendChild(btn);
+        });
+    }
+
+    _renderFontList() {
+        if (!this.fontList) return;
+        const currentFont = this.settings.get('font');
+        this.fontList.innerHTML = '';
+        Object.entries(this.settings.fonts).forEach(([id, font]) => {
+            const btn = document.createElement('button');
+            btn.className = `font-item${id === currentFont ? ' selected' : ''}`;
+            btn.textContent = font.label;
+            btn.style.fontFamily = font.family;
+            btn.addEventListener('click', () => {
+                this.settings.applyFont(id);
+                this._renderFontList();
+            });
+            this.fontList.appendChild(btn);
+        });
     }
 
     _prev() {

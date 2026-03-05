@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Serif+JP:wght@400;700&family=Source+Code+Pro:wght@400;600;700&display=swap"
     rel="stylesheet">
 
   <!-- Styles -->
@@ -26,8 +26,14 @@
 
     <!-- Header -->
     <header class="header">
-      <h1 class="header-title">英検準一級 単語暗記</h1>
-      <p class="header-subtitle">Eiken Pre-1 Vocabulary Trainer</p>
+      <div class="header-row">
+        <div class="header-left"></div>
+        <div class="header-center">
+          <h1 class="header-title">英検準一級 単語暗記</h1>
+          <p class="header-subtitle" id="headerSubtitle">Eiken Pre-1 Vocabulary Trainer</p>
+        </div>
+        <button class="header-settings-btn" id="settingsBtn" aria-label="設定">⚙</button>
+      </div>
     </header>
 
     <!-- Progress -->
@@ -136,9 +142,41 @@
     </div>
   </div>
 
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content settings-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">⚙ 設定</h2>
+        <button class="modal-close" id="settingsModalClose">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <label class="settings-label" for="usernameInput">👤 ユーザー名</label>
+        <input type="text" class="settings-input" id="usernameInput" placeholder="名前を入力..." maxlength="20">
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">🎨 カラーテーマ</span>
+        <div class="theme-grid" id="themeGrid"></div>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">🔤 フォント</span>
+        <div class="font-list" id="fontList"></div>
+      </div>
+
+      <div class="settings-section settings-danger">
+        <span class="settings-label">🗑️ データ管理</span>
+        <button class="settings-reset-btn" id="resetProgressBtn">📊 暗記記録をリセット</button>
+        <button class="settings-reset-btn settings-reset-all" id="resetAllBtn">⚠ 全設定を初期化</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/data.js"></script>
   <script src="js/speech.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/app.js"></script>
 </body>
 
