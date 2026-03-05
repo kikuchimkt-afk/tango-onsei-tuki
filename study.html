@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="description" content="英検単語暗記アプリ。ネイティブ発音付きのフラッシュカードで効率的に語彙力を強化。">
+  <meta name="theme-color" content="#0f0f1a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>単語暗記</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Serif+JP:wght@400;700&family=Source+Code+Pro:wght@400;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="app-wrapper">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-row">
+        <a href="index.html" class="header-back-btn" aria-label="トップへ戻る">←</a>
+        <div class="header-center">
+          <h1 class="header-title" id="headerTitle">単語暗記</h1>
+          <p class="header-subtitle" id="headerSubtitle">Vocabulary Trainer</p>
+        </div>
+        <button class="header-settings-btn" id="settingsBtn" aria-label="設定">⚙</button>
+      </div>
+    </header>
+
+    <!-- Progress -->
+    <div class="progress-container">
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">0 / 15 暗記完了</div>
+    </div>
+
+    <!-- iOS Notice -->
+    <div class="ios-notice" id="iosNotice">
+      <button class="ios-notice-close" id="iosNoticeClose">✕</button>
+      <div class="ios-notice-title">📱 iOSをお使いの方へ</div>
+      <div>
+        より自然な発音にするには：<br>
+        設定 → アクセシビリティ → 読み上げコンテンツ → 声 → English → 高品質音声をダウンロード
+      </div>
+    </div>
+
+    <!-- Voice Info -->
+    <div class="voice-info-bar">
+      <span class="voice-info" id="voiceInfo">🔊 読み込み中...</span>
+      <button class="voice-settings-btn" id="voiceSettingsBtn">⚙ 音声設定</button>
+    </div>
+
+    <!-- Card -->
+    <div class="card-area">
+      <div class="card" id="card">
+        <div class="card-inner" id="cardInner">
+          <!-- Front -->
+          <div class="card-face card-front">
+            <div class="word-display" id="word">loading...</div>
+            <div class="phonetic-display" id="phonetic"></div>
+          </div>
+
+          <!-- Back -->
+          <div class="card-face card-back">
+            <span class="pos-badge" id="partOfSpeech"></span>
+            <div class="meaning-display" id="meaning"></div>
+            <div class="divider"></div>
+            <div class="example-label">Example</div>
+            <div class="example-display" id="example"></div>
+            <div class="example-translation-display" id="exampleTranslation"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="counter" id="counter">1 / 15</div>
+
+      <div class="controls-row">
+        <button class="speak-btn" id="speakWordGlobal" aria-label="単語を発音">
+          <span class="speak-icon">🔊</span>
+          <span>単語</span>
+        </button>
+        <button class="speak-btn" id="speakExampleGlobal" aria-label="例文を発音">
+          <span class="speak-icon">📖</span>
+          <span>例文</span>
+        </button>
+      </div>
+
+      <div class="controls-row">
+        <button class="ctrl-btn nav-btn" id="prevBtn" aria-label="前へ">←</button>
+        <button class="ctrl-btn" id="flipBtn">
+          <span class="btn-icon">🔄</span> 意味を見る
+        </button>
+        <button class="ctrl-btn" id="masterBtn">
+          <span class="btn-icon">⬜</span> 暗記する
+        </button>
+        <button class="ctrl-btn nav-btn" id="nextBtn" aria-label="次へ">→</button>
+      </div>
+
+      <div class="controls-row">
+        <button class="ctrl-btn speed-step" id="speedBtn" aria-label="再生速度">🎯 ふつう</button>
+        <button class="ctrl-btn" id="filterBtn">
+          <span class="btn-icon">📋</span> 未暗記のみ
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="keyboard-hints">
+        <kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd> ナビゲーション　
+        <kbd class="kbd">Space</kbd> フリップ　
+        <kbd class="kbd">Enter</kbd> 発音
+      </div>
+      <div class="footer-text">英検準一級 単語暗記アプリ</div>
+    </footer>
+  </div>
+
+  <!-- Voice Selection Modal -->
+  <div class="modal-overlay" id="voiceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">🔊 音声を選択</h2>
+        <button class="modal-close" id="voiceModalClose">✕</button>
+      </div>
+      <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 12px;">
+        音声をタップするとテスト再生されます
+      </p>
+      <div id="voiceList"></div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content settings-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">⚙ 設定</h2>
+        <button class="modal-close" id="settingsModalClose">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <label class="settings-label" for="usernameInput">👤 ユーザー名</label>
+        <input type="text" class="settings-input" id="usernameInput" placeholder="名前を入力..." maxlength="20">
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">🎨 カラーテーマ</span>
+        <div class="theme-grid" id="themeGrid"></div>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">🔤 フォント</span>
+        <div class="font-list" id="fontList"></div>
+      </div>
+
+      <div class="settings-section settings-danger">
+        <span class="settings-label">🗑️ データ管理</span>
+        <button class="settings-reset-btn" id="resetProgressBtn">📊 暗記記録をリセット</button>
+        <button class="settings-reset-btn settings-reset-all" id="resetAllBtn">⚠ 全設定を初期化</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data/eiken5.js"></script>
+  <script src="js/data/eiken4.js"></script>
+  <script src="js/data/eiken3.js"></script>
+  <script src="js/data/eiken-pre2.js"></script>
+  <script src="js/data/eiken2.js"></script>
+  <script src="js/data/eiken-pre1.js"></script>
+  <script src="js/data/levels.js"></script>
+  <script src="js/speech.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

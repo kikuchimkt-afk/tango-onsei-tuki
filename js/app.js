@@ -1,14 +1,34 @@
 /**
- * 英検準一級 単語暗記アプリ - メインアプリケーション
+ * 英検 単語暗記アプリ - メインアプリケーション
  */
 class VocabularyApp {
     constructor() {
         this.settings = new SettingsManager();
         this.speech = new SpeechEngine();
-        this.words = [...VOCABULARY_DATA];
+
+        // URLパラメータからレベルを取得
+        const params = new URLSearchParams(window.location.search);
+        this.levelId = params.get('level') || 'eiken-pre1';
+        const levelConfig = (typeof LEVEL_CONFIG !== 'undefined') ? LEVEL_CONFIG[this.levelId] : null;
+
+        if (levelConfig) {
+            this.words = [...levelConfig.getData()];
+            this.levelName = levelConfig.name;
+        } else if (typeof VOCABULARY_DATA !== 'undefined') {
+            // 後方互換: 旧data.jsがある場合
+            this.words = [...VOCABULARY_DATA];
+            this.levelName = '単語暗記';
+        } else {
+            this.words = [];
+            this.levelName = '単語暗記';
+        }
+
         this.currentIndex = 0;
         this.isFlipped = false;
-        this.masteredWords = new Set(JSON.parse(localStorage.getItem('masteredWords') || '[]'));
+        // レベル別に暗記記録を管理
+        const storageKey = `masteredWords_${this.levelId}`;
+        this.masteredStorageKey = storageKey;
+        this.masteredWords = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
         this.showOnlyUnmastered = false;
         this.filteredWords = this.words;
 
@@ -22,10 +42,11 @@ class VocabularyApp {
         ];
         const savedRate = parseFloat(localStorage.getItem('speechRate') || '1.0');
         this.speedIndex = this.speedLevels.findIndex(s => s.rate === savedRate);
-        if (this.speedIndex < 0) this.speedIndex = 2; // デフォルト: ふつう
+        if (this.speedIndex < 0) this.speedIndex = 2;
 
         this._initElements();
         this._bindEvents();
+        this._updateLevelHeader();
         this._updateDisplay();
         this._updateProgress();
         this._checkSpeechSupport();
@@ -281,23 +302,50 @@ class VocabularyApp {
     _applyUsername() {
         const name = this.settings.get('username');
         if (this.headerSubtitle) {
-            this.headerSubtitle.textContent = name ? `${name} さんの学習` : 'Eiken Pre-1 Vocabulary Trainer';
+            if (name) {
+                this.headerSubtitle.textContent = `${name} さんの学習`;
+            } else {
+                const levelConfig = (typeof LEVEL_CONFIG !== 'undefined') ? LEVEL_CONFIG[this.levelId] : null;
+                this.headerSubtitle.textContent = levelConfig ? levelConfig.subtitle : 'Vocabulary Trainer';
+            }
         }
+    }
+
+    _updateLevelHeader() {
+        const headerTitle = document.getElementById('headerTitle');
+        if (headerTitle) {
+            headerTitle.textContent = `${this.levelName} 単語暗記`;
+        }
+        document.title = `${this.levelName} 単語暗記`;
     }
 
     _renderThemeGrid() {
         if (!this.themeGrid) return;
         const currentTheme = this.settings.get('theme');
         this.themeGrid.innerHTML = '';
+        const categories = {};
         Object.entries(this.settings.themes).forEach(([id, theme]) => {
-            const btn = document.createElement('button');
-            btn.className = `theme-item${id === currentTheme ? ' selected' : ''}`;
-            btn.innerHTML = `<span class="theme-swatch" style="background:${theme.primary}"></span>${theme.label}`;
-            btn.addEventListener('click', () => {
-                this.settings.applyTheme(id);
-                this._renderThemeGrid();
+            if (!categories[theme.category]) categories[theme.category] = [];
+            categories[theme.category].push({ id, ...theme });
+        });
+        Object.entries(categories).forEach(([cat, themes]) => {
+            const label = document.createElement('div');
+            label.className = 'theme-category';
+            label.textContent = cat;
+            this.themeGrid.appendChild(label);
+            const grid = document.createElement('div');
+            grid.className = 'theme-grid';
+            themes.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = `theme-item${t.id === currentTheme ? ' selected' : ''}`;
+                btn.innerHTML = `<span class="theme-swatch" style="background:${t.primary}"></span>${t.label}`;
+                btn.addEventListener('click', () => {
+                    this.settings.applyTheme(t.id);
+                    this._renderThemeGrid();
+                });
+                grid.appendChild(btn);
             });
-            this.themeGrid.appendChild(btn);
+            this.themeGrid.appendChild(grid);
         });
     }
 
@@ -354,7 +402,7 @@ class VocabularyApp {
             this.masteredWords.add(word.id);
         }
 
-        localStorage.setItem('masteredWords', JSON.stringify([...this.masteredWords]));
+        localStorage.setItem(this.masteredStorageKey, JSON.stringify([...this.masteredWords]));
         this._updateDisplay();
         this._updateProgress();
 

@@ -4,142 +4,311 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="description" content="英検準一級の単語暗記アプリ。ネイティブ発音付きのフラッシュカードで効率的に語彙力を強化。">
+  <meta name="description" content="英検5級〜準1級対応の単語暗記アプリ。ネイティブ発音付きフラッシュカードで効率的に語彙力を強化。">
   <meta name="theme-color" content="#0f0f1a">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>英検準一級 単語暗記</title>
+  <title>英検 単語暗記</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Serif+JP:wght@400;700&family=Source+Code+Pro:wght@400;600;700&display=swap"
     rel="stylesheet">
-
-  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .top-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /* Header */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 16px;
+    }
+
+    .top-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-brand-icon {
+      font-size: 1.6rem;
+    }
+
+    .top-brand-text h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--color-primary-light), var(--color-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    .top-brand-text p {
+      font-size: 0.6rem;
+      color: var(--color-text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Greeting */
+    .top-greeting {
+      padding: 12px 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .top-greeting.show {
+      display: block;
+    }
+
+    .top-greeting-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .top-greeting-sub {
+      font-size: 0.65rem;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Stats */
+    .top-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      padding: 10px 8px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--color-primary-light);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 0.55rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      padding-left: 2px;
+    }
+
+    /* Level Cards */
+    .level-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .level-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: var(--color-text);
+      transition: all 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-card::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--card-accent);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .level-card:active {
+      transform: scale(0.98);
+      background: var(--color-surface);
+    }
+
+    .level-icon-wrap {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      border-radius: var(--radius-sm);
+      background: var(--card-accent-bg, rgba(255, 255, 255, 0.04));
+      flex-shrink: 0;
+    }
+
+    .level-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .level-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .level-desc {
+      font-size: 0.65rem;
+      color: var(--color-text-muted);
+      margin-top: 1px;
+    }
+
+    .level-bottom {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .level-progress-bar {
+      flex: 1;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .level-progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    .level-pct {
+      font-size: 0.6rem;
+      color: var(--color-text-dim);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .level-arrow {
+      color: var(--color-text-dim);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    /* Footer */
+    .top-footer {
+      text-align: center;
+      padding: 16px 0 4px;
+      font-size: 0.55rem;
+      color: var(--color-text-dim);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .level-card:hover {
+        border-color: var(--color-primary);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    /* Theme grid categories */
+    .theme-category {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      margin: 12px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .theme-category:first-child {
+      margin-top: 0;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="app-wrapper">
+  <div class="top-wrapper">
 
     <!-- Header -->
-    <header class="header">
-      <div class="header-row">
-        <div class="header-left"></div>
-        <div class="header-center">
-          <h1 class="header-title">英検準一級 単語暗記</h1>
-          <p class="header-subtitle" id="headerSubtitle">Eiken Pre-1 Vocabulary Trainer</p>
+    <header class="top-header">
+      <div class="top-brand">
+        <span class="top-brand-icon">📚</span>
+        <div class="top-brand-text">
+          <h1>英検 単語暗記</h1>
+          <p>Vocabulary Trainer</p>
         </div>
-        <button class="header-settings-btn" id="settingsBtn" aria-label="設定">⚙</button>
       </div>
+      <button class="header-settings-btn" id="settingsBtn" aria-label="設定">⚙</button>
     </header>
 
-    <!-- Progress -->
-    <div class="progress-container">
-      <div class="progress-bar-outer">
-        <div class="progress-bar-inner" id="progressBar"></div>
+    <!-- Greeting -->
+    <div class="top-greeting" id="topGreeting">
+      <div class="top-greeting-text" id="greetingText"></div>
+      <div class="top-greeting-sub" id="greetingSub"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="top-stats" id="topStats">
+      <div class="stat-card">
+        <div class="stat-value" id="statTotal">120</div>
+        <div class="stat-label">全単語</div>
       </div>
-      <div class="progress-text" id="progressText">0 / 15 暗記完了</div>
-    </div>
-
-    <!-- iOS Notice -->
-    <div class="ios-notice" id="iosNotice">
-      <button class="ios-notice-close" id="iosNoticeClose">✕</button>
-      <div class="ios-notice-title">📱 iOSをお使いの方へ</div>
-      <div>
-        より自然な発音にするには：<br>
-        設定 → アクセシビリティ → 読み上げコンテンツ → 声 → English → 高品質音声をダウンロード
+      <div class="stat-card">
+        <div class="stat-value" id="statMastered">0</div>
+        <div class="stat-label">暗記済</div>
       </div>
-    </div>
-
-    <!-- Voice Info -->
-    <div class="voice-info-bar">
-      <span class="voice-info" id="voiceInfo">🔊 読み込み中...</span>
-      <button class="voice-settings-btn" id="voiceSettingsBtn">⚙ 音声設定</button>
-    </div>
-
-    <!-- Card -->
-    <div class="card-area">
-      <div class="card" id="card">
-        <div class="card-inner" id="cardInner">
-          <!-- Front -->
-          <div class="card-face card-front">
-            <div class="word-display" id="word">loading...</div>
-            <div class="phonetic-display" id="phonetic"></div>
-          </div>
-
-          <!-- Back -->
-          <div class="card-face card-back">
-            <span class="pos-badge" id="partOfSpeech"></span>
-            <div class="meaning-display" id="meaning"></div>
-            <div class="divider"></div>
-            <div class="example-label">Example</div>
-            <div class="example-display" id="example"></div>
-            <div class="example-translation-display" id="exampleTranslation"></div>
-          </div>
-        </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statPercent">0%</div>
+        <div class="stat-label">達成率</div>
       </div>
     </div>
 
-    <!-- Controls -->
-    <div class="controls">
-      <div class="counter" id="counter">1 / 15</div>
+    <!-- Level Selection -->
+    <div class="section-label">レベルを選ぶ</div>
+    <div class="level-grid" id="levelGrid"></div>
 
-      <div class="controls-row">
-        <button class="speak-btn" id="speakWordGlobal" aria-label="単語を発音">
-          <span class="speak-icon">🔊</span>
-          <span>単語</span>
-        </button>
-        <button class="speak-btn" id="speakExampleGlobal" aria-label="例文を発音">
-          <span class="speak-icon">📖</span>
-          <span>例文</span>
-        </button>
-      </div>
-
-      <div class="controls-row">
-        <button class="ctrl-btn nav-btn" id="prevBtn" aria-label="前へ">←</button>
-        <button class="ctrl-btn" id="flipBtn">
-          <span class="btn-icon">🔄</span> 意味を見る
-        </button>
-        <button class="ctrl-btn" id="masterBtn">
-          <span class="btn-icon">⬜</span> 暗記する
-        </button>
-        <button class="ctrl-btn nav-btn" id="nextBtn" aria-label="次へ">→</button>
-      </div>
-
-      <div class="controls-row">
-        <button class="ctrl-btn speed-step" id="speedBtn" aria-label="再生速度">🎯 ふつう</button>
-        <button class="ctrl-btn" id="filterBtn">
-          <span class="btn-icon">📋</span> 未暗記のみ
-        </button>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="keyboard-hints">
-        <kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd> ナビゲーション　
-        <kbd class="kbd">Space</kbd> フリップ　
-        <kbd class="kbd">Enter</kbd> 発音
-      </div>
-      <div class="footer-text">英検準一級 単語暗記アプリ</div>
-    </footer>
-  </div>
-
-  <!-- Voice Selection Modal -->
-  <div class="modal-overlay" id="voiceModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">🔊 音声を選択</h2>
-        <button class="modal-close" id="voiceModalClose">✕</button>
-      </div>
-      <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 12px;">
-        音声をタップするとテスト再生されます
-      </p>
-      <div id="voiceList"></div>
-    </div>
+    <footer class="top-footer">音声付きフラッシュカード学習アプリ</footer>
   </div>
 
   <!-- Settings Modal -->
@@ -157,7 +326,7 @@
 
       <div class="settings-section">
         <span class="settings-label">🎨 カラーテーマ</span>
-        <div class="theme-grid" id="themeGrid"></div>
+        <div id="themeGrid"></div>
       </div>
 
       <div class="settings-section">
@@ -167,17 +336,161 @@
 
       <div class="settings-section settings-danger">
         <span class="settings-label">🗑️ データ管理</span>
-        <button class="settings-reset-btn" id="resetProgressBtn">📊 暗記記録をリセット</button>
-        <button class="settings-reset-btn settings-reset-all" id="resetAllBtn">⚠ 全設定を初期化</button>
+        <button class="settings-reset-btn" id="resetAllBtn">⚠ 全データを初期化</button>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="js/data.js"></script>
-  <script src="js/speech.js"></script>
+  <script src="js/data/eiken5.js"></script>
+  <script src="js/data/eiken4.js"></script>
+  <script src="js/data/eiken3.js"></script>
+  <script src="js/data/eiken-pre2.js"></script>
+  <script src="js/data/eiken2.js"></script>
+  <script src="js/data/eiken-pre1.js"></script>
+  <script src="js/data/levels.js"></script>
   <script src="js/settings.js"></script>
-  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const settings = new SettingsManager();
+      settings.applyAll();
+
+      const username = settings.get('username');
+      const greetingEl = document.getElementById('topGreeting');
+      const greetingText = document.getElementById('greetingText');
+      const greetingSub = document.getElementById('greetingSub');
+
+      if (username && greetingEl) {
+        const hour = new Date().getHours();
+        let timeGreet = 'こんにちは';
+        if (hour < 6) timeGreet = 'おやすみ前の学習ですね';
+        else if (hour < 10) timeGreet = 'おはようございます';
+        else if (hour < 18) timeGreet = 'こんにちは';
+        else timeGreet = 'こんばんは';
+        greetingText.textContent = `${timeGreet}、${username} さん`;
+        greetingSub.textContent = '今日も一緒に頑張りましょう！';
+        greetingEl.classList.add('show');
+      }
+
+      // Stats
+      let totalWords = 0;
+      let totalMastered = 0;
+      LEVEL_ORDER.forEach(id => {
+        const lv = LEVEL_CONFIG[id];
+        if (!lv) return;
+        totalWords += lv.getData().length;
+        totalMastered += JSON.parse(localStorage.getItem(`masteredWords_${id}`) || '[]').length;
+      });
+      document.getElementById('statTotal').textContent = totalWords;
+      document.getElementById('statMastered').textContent = totalMastered;
+      document.getElementById('statPercent').textContent = totalWords > 0 ? Math.round((totalMastered / totalWords) * 100) + '%' : '0%';
+
+      // Level cards
+      const grid = document.getElementById('levelGrid');
+      LEVEL_ORDER.forEach(levelId => {
+        const level = LEVEL_CONFIG[levelId];
+        if (!level) return;
+        const data = level.getData();
+        const mastered = JSON.parse(localStorage.getItem(`masteredWords_${levelId}`) || '[]').length;
+        const total = data.length;
+        const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
+
+        const a = document.createElement('a');
+        a.href = `study.html?level=${levelId}`;
+        a.className = 'level-card';
+        a.style.setProperty('--card-accent', level.color);
+        a.style.setProperty('--card-accent-bg', level.color + '15');
+        a.innerHTML = `
+          <div class="level-icon-wrap">${level.icon}</div>
+          <div class="level-info">
+            <div class="level-name">${level.name}</div>
+            <div class="level-desc">${level.description} · ${total}語</div>
+            <div class="level-bottom">
+              <div class="level-progress-bar">
+                <div class="level-progress-fill" style="width:${pct}%;background:${level.color}"></div>
+              </div>
+              <span class="level-pct">${mastered}/${total}</span>
+            </div>
+          </div>
+          <span class="level-arrow">›</span>
+        `;
+        grid.appendChild(a);
+      });
+
+      // Settings modal
+      const settingsBtn = document.getElementById('settingsBtn');
+      const settingsModal = document.getElementById('settingsModal');
+      const settingsModalClose = document.getElementById('settingsModalClose');
+      const usernameInput = document.getElementById('usernameInput');
+      const themeGrid = document.getElementById('themeGrid');
+      const fontList = document.getElementById('fontList');
+      const resetAllBtn = document.getElementById('resetAllBtn');
+
+      function renderThemes() {
+        if (!themeGrid) return;
+        const current = settings.get('theme');
+        themeGrid.innerHTML = '';
+        const categories = {};
+        Object.entries(settings.themes).forEach(([id, theme]) => {
+          if (!categories[theme.category]) categories[theme.category] = [];
+          categories[theme.category].push({ id, ...theme });
+        });
+        Object.entries(categories).forEach(([cat, themes]) => {
+          const label = document.createElement('div');
+          label.className = 'theme-category';
+          label.textContent = cat;
+          themeGrid.appendChild(label);
+          const grid = document.createElement('div');
+          grid.className = 'theme-grid';
+          themes.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = `theme-item${t.id === current ? ' selected' : ''}`;
+            btn.innerHTML = `<span class="theme-swatch" style="background:${t.primary}"></span>${t.label}`;
+            btn.addEventListener('click', () => { settings.applyTheme(t.id); renderThemes(); });
+            grid.appendChild(btn);
+          });
+          themeGrid.appendChild(grid);
+        });
+      }
+
+      function renderFonts() {
+        if (!fontList) return;
+        const current = settings.get('font');
+        fontList.innerHTML = '';
+        Object.entries(settings.fonts).forEach(([id, font]) => {
+          const btn = document.createElement('button');
+          btn.className = `font-item${id === current ? ' selected' : ''}`;
+          btn.textContent = font.label;
+          btn.style.fontFamily = font.family;
+          btn.addEventListener('click', () => { settings.applyFont(id); renderFonts(); });
+          fontList.appendChild(btn);
+        });
+      }
+
+      if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+          renderThemes(); renderFonts();
+          if (usernameInput) usernameInput.value = settings.get('username') || '';
+          if (usernameInput) {
+            usernameInput.oninput = () => {
+              settings.set('username', usernameInput.value.trim());
+              const n = usernameInput.value.trim();
+              if (n) {
+                greetingText.textContent = `こんにちは、${n} さん`;
+                greetingSub.textContent = '今日も一緒に頑張りましょう！';
+                greetingEl.classList.add('show');
+              } else {
+                greetingEl.classList.remove('show');
+              }
+            };
+          }
+          settingsModal.classList.add('show');
+        });
+      }
+      if (settingsModalClose) settingsModalClose.addEventListener('click', () => settingsModal.classList.remove('show'));
+      if (settingsModal) settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.remove('show'); });
+      if (resetAllBtn) resetAllBtn.addEventListener('click', () => { if (confirm('全データを初期化しますか？')) { settings.resetAll(); location.reload(); } });
+    });
+  </script>
 </body>
 
 </html>
