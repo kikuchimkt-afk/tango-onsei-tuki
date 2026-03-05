@@ -33,6 +33,8 @@ class VocabularyApp {
         // ボタン
         this.speakWordBtn = document.getElementById('speakWord');
         this.speakExampleBtn = document.getElementById('speakExample');
+        this.speakWordBackBtn = document.getElementById('speakWordBack');
+        this.speakExampleBackBtn = document.getElementById('speakExampleBack');
         this.prevBtn = document.getElementById('prevBtn');
         this.nextBtn = document.getElementById('nextBtn');
         this.masterBtn = document.getElementById('masterBtn');
@@ -70,6 +72,19 @@ class VocabularyApp {
         });
 
         this.speakExampleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.speech.prime();
+            this._speakExample();
+        });
+
+        // 裏面の音声ボタン
+        this.speakWordBackBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.speech.prime();
+            this._speakWord();
+        });
+
+        this.speakExampleBackBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.speech.prime();
             this._speakExample();
