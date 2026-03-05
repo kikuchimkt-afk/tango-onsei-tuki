@@ -10,7 +10,18 @@ class VocabularyApp {
         this.masteredWords = new Set(JSON.parse(localStorage.getItem('masteredWords') || '[]'));
         this.showOnlyUnmastered = false;
         this.filteredWords = this.words;
-        this.customRate = parseFloat(localStorage.getItem('speechRate') || '1.0');
+
+        // 5段階スピード設定
+        this.speedLevels = [
+            { rate: 0.7, label: '🐢 遅い' },
+            { rate: 0.85, label: '🔽 少し遅い' },
+            { rate: 1.0, label: '🎯 ふつう' },
+            { rate: 1.15, label: '🔼 少し速い' },
+            { rate: 1.3, label: '🐇 速い' }
+        ];
+        const savedRate = parseFloat(localStorage.getItem('speechRate') || '1.0');
+        this.speedIndex = this.speedLevels.findIndex(s => s.rate === savedRate);
+        if (this.speedIndex < 0) this.speedIndex = 2; // デフォルト: ふつう
 
         this._initElements();
         this._bindEvents();
@@ -39,9 +50,7 @@ class VocabularyApp {
         this.masterBtn = document.getElementById('masterBtn');
         this.flipBtn = document.getElementById('flipBtn');
         this.filterBtn = document.getElementById('filterBtn');
-        this.speedDownBtn = document.getElementById('speedDown');
-        this.speedUpBtn = document.getElementById('speedUp');
-        this.speedDisplay = document.getElementById('speedDisplay');
+        this.speedBtn = document.getElementById('speedBtn');
 
         // 表示要素
         this.progressBar = document.getElementById('progressBar');
@@ -93,8 +102,7 @@ class VocabularyApp {
         on(this.filterBtn, 'click', () => this._toggleFilter());
 
         // 速度変更
-        on(this.speedDownBtn, 'click', () => this._changeSpeed(-0.2));
-        on(this.speedUpBtn, 'click', () => this._changeSpeed(0.2));
+        on(this.speedBtn, 'click', () => this._cycleSpeed());
 
         // iOSお知らせ閉じる
         if (this.iosNoticeClose) {
@@ -199,21 +207,19 @@ class VocabularyApp {
     }
 
     _getRate() {
-        return this.customRate;
+        return this.speedLevels[this.speedIndex].rate;
     }
 
-    _changeSpeed(delta) {
-        this.customRate = Math.round((this.customRate + delta) * 10) / 10;
-        // 範囲制限: 0.2 〜 2.0
-        this.customRate = Math.max(0.2, Math.min(2.0, this.customRate));
-        localStorage.setItem('speechRate', this.customRate.toString());
+    _cycleSpeed() {
+        this.speedIndex = (this.speedIndex + 1) % this.speedLevels.length;
+        localStorage.setItem('speechRate', this.speedLevels[this.speedIndex].rate.toString());
         this._updateSpeedDisplay();
     }
 
     _updateSpeedDisplay() {
-        this.speedDisplay.textContent = `×${this.customRate.toFixed(1)}`;
-        this.speedDownBtn.disabled = this.customRate <= 0.2;
-        this.speedUpBtn.disabled = this.customRate >= 2.0;
+        if (this.speedBtn) {
+            this.speedBtn.textContent = this.speedLevels[this.speedIndex].label;
+        }
     }
 
     _prev() {
