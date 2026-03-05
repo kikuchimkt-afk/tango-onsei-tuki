@@ -62,16 +62,6 @@
           <div class="card-face card-front">
             <div class="word-display" id="word">loading...</div>
             <div class="phonetic-display" id="phonetic"></div>
-            <div class="speak-btn-group">
-              <button class="speak-btn" id="speakWord" aria-label="単語を発音">
-                <span class="speak-icon">🔊</span>
-                <span>単語</span>
-              </button>
-              <button class="speak-btn" id="speakExample" aria-label="例文を発音">
-                <span class="speak-icon">📖</span>
-                <span>例文</span>
-              </button>
-            </div>
           </div>
 
           <!-- Back -->
@@ -82,16 +72,6 @@
             <div class="example-label">Example</div>
             <div class="example-display" id="example"></div>
             <div class="example-translation-display" id="exampleTranslation"></div>
-            <div class="back-speak-btn-group">
-              <button class="speak-btn" id="speakWordBack" aria-label="単語を発音">
-                <span class="speak-icon">🔊</span>
-                <span>単語</span>
-              </button>
-              <button class="speak-btn" id="speakExampleBack" aria-label="例文を発音">
-                <span class="speak-icon">📖</span>
-                <span>例文</span>
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -100,6 +80,17 @@
     <!-- Controls -->
     <div class="controls">
       <div class="counter" id="counter">1 / 15</div>
+
+      <div class="controls-row">
+        <button class="speak-btn" id="speakWordGlobal" aria-label="単語を発音">
+          <span class="speak-icon">🔊</span>
+          <span>単語</span>
+        </button>
+        <button class="speak-btn" id="speakExampleGlobal" aria-label="例文を発音">
+          <span class="speak-icon">📖</span>
+          <span>例文</span>
+        </button>
+      </div>
 
       <div class="controls-row">
         <button class="ctrl-btn nav-btn" id="prevBtn" aria-label="前へ">←</button>

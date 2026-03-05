@@ -31,10 +31,9 @@ class VocabularyApp {
         this.exampleTranslationEl = document.getElementById('exampleTranslation');
 
         // ボタン
-        this.speakWordBtn = document.getElementById('speakWord');
-        this.speakExampleBtn = document.getElementById('speakExample');
-        this.speakWordBackBtn = document.getElementById('speakWordBack');
-        this.speakExampleBackBtn = document.getElementById('speakExampleBack');
+        this.speakWordBtn = document.getElementById('speakWordGlobal');
+        this.speakExampleBtn = document.getElementById('speakExampleGlobal');
+
         this.prevBtn = document.getElementById('prevBtn');
         this.nextBtn = document.getElementById('nextBtn');
         this.masterBtn = document.getElementById('masterBtn');
@@ -60,8 +59,11 @@ class VocabularyApp {
     }
 
     _bindEvents() {
-        // カードフリップ
-        this.cardInner.addEventListener('click', () => this._flipCard());
+        // カードフリップ（speak-btnクリック時はフリップしない）
+        this.cardInner.addEventListener('click', (e) => {
+            if (e.target.closest('.speak-btn')) return;
+            this._flipCard();
+        });
         this.flipBtn.addEventListener('click', () => this._flipCard());
 
         // 音声ボタン（プライミングも兼ねる）
@@ -72,19 +74,6 @@ class VocabularyApp {
         });
 
         this.speakExampleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.speech.prime();
-            this._speakExample();
-        });
-
-        // 裏面の音声ボタン
-        this.speakWordBackBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.speech.prime();
-            this._speakWord();
-        });
-
-        this.speakExampleBackBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.speech.prime();
             this._speakExample();
